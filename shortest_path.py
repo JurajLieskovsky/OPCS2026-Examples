@@ -1,0 +1,24 @@
+import cvxpy as cp
+import numpy as np
+
+x = cp.Variable(8)
+
+c = [10, 8, 6, 2, 4, 5, 8, 9]
+
+objective = cp.Minimize(c @ x)
+
+constraints = [
+    0 <= x,
+    x[6] + x[7] == 1,
+    x[0] == x[2] + x[3],
+    x[1] == x[4] + x[5],
+    x[2] + x[4] == x[6],
+    x[3] + x[5] == x[7],
+]
+
+problem = cp.Problem(objective, constraints)
+
+problem.solve()
+
+print(objective.value)
+print(np.round(x.value, 0))
