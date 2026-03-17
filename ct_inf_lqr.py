@@ -1,5 +1,6 @@
-import numpy as np
-from scipy.integrate import solve_ivp
+import autograd
+import autograd.numpy as np
+import scipy
 import matplotlib.pyplot as plt
 
 import meshcat
@@ -9,14 +10,31 @@ import birotor_with_payload_visualizer as vis
 import birotor_with_payload_dynamics as dyn
 
 ## Equilibrium state
-x0 = np.zeros(8)
-u0 = g * (dyn.mass_P + dyn.mass_Q) / 2 * np.ones(2)
+x_eq = np.zeros(8)
+u_eq = dyn.g * (dyn.mass_P + dyn.mass_Q) / 2 * np.ones(2)
+
+dfdx = autograd.jacobian(lambda x: dyn.f(0.0, x, u_eq))
+dfdu = autograd.jacobian(lambda u: dyn.f(0.0, x_eq, u))
+
+A = dfdx(x_eq)
+B = dfdu(u_eq)
+
+## LQR design
+Q = 1e2 * np.identity(8)
+R = np.identity(2)
+
+P = scipy.linalg.solve_continuous_are(A, B, Q, R)
+K = np.linalg.solve(R, B.T @ P)
+
+print(K)
 
 # Simulation
-T = 1
+T = 8
 
-sol = solve_ivp(
-    lambda t, x: dyn.f(t, x, u0),
+x0 = np.array([5, 2, 0, 0, 0, 0, 0, 0])
+
+sol = scipy.integrate.solve_ivp(
+    lambda t, x: dyn.f(t, x, u_eq - K @ (x - x_eq)),
     [0.0, T],
     x0,
     dense_output=True,

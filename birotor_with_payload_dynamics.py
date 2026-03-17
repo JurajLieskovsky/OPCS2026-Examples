@@ -1,4 +1,5 @@
-import numpy as np
+import autograd
+import autograd.numpy as np
 
 # Model of the system
 ## Parameters
@@ -57,3 +58,4 @@ def f(t, x, u):
             np.linalg.solve(M, -c + tau_g + B @ u),
         )
     )
+
