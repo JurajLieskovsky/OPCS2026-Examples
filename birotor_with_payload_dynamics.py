@@ -59,3 +59,13 @@ def f(t, x, u):
         )
     )
 
+
+## Differentiation
+def df(t, x_eq, u_eq):
+    dfdx = autograd.jacobian(lambda x: f(t, x, u_eq))
+    dfdu = autograd.jacobian(lambda u: f(t, x_eq, u))
+
+    A = dfdx(x_eq)
+    B = dfdu(u_eq)
+
+    return A, B

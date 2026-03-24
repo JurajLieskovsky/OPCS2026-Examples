@@ -1,5 +1,4 @@
-import autograd
-import autograd.numpy as np
+import numpy as np
 import scipy
 import matplotlib.pyplot as plt
 
@@ -13,11 +12,7 @@ import birotor_with_payload_dynamics as dyn
 x_eq = np.zeros(8)
 u_eq = dyn.g * (dyn.mass_P + dyn.mass_Q) / 2 * np.ones(2)
 
-dfdx = autograd.jacobian(lambda x: dyn.f(0.0, x, u_eq))
-dfdu = autograd.jacobian(lambda u: dyn.f(0.0, x_eq, u))
-
-A = dfdx(x_eq)
-B = dfdu(u_eq)
+A, B = dyn.df(0, x_eq, u_eq)
 
 ## LQR design
 Q = 1e2 * np.identity(8)
