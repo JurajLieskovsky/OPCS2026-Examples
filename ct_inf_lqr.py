@@ -39,11 +39,18 @@ sol = scipy.integrate.solve_ivp(
 # Visualization
 tspan = np.linspace(0, T, 100)
 
-fix, ax = plt.subplots()
-for i in range(4):
-    ax.plot(tspan, sol.sol(tspan)[i, :], label=f"x{i}")
+xs = [sol.sol(t) for t in tspan]
+us = [u_eq - K @ (x - x_eq) for x in xs]
 
-ax.legend()
+fix, ax = plt.subplots(2)
+for i in range(4):
+    ax[0].plot(tspan, [x[i] for x in xs], label=f"x{i}")
+
+for i in range(2):
+    ax[1].plot(tspan, [u[i] for u in us], label=f"u{i}")
+
+ax[0].legend()
+ax[1].legend()
 plt.show(block=False)
 
 #  animation
