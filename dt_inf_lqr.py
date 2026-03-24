@@ -31,24 +31,24 @@ print(K)
 
 # Simulation
 N = 500
+x0 = np.array([5, 2, 0, 0, 0, 0, 0, 0])
+
+solver = scipy.integrate.ode(dyn.f)
+solver.set_integrator(name="dopri5")
+solver.set_initial_value(x0)
 
 xs = [np.zeros(8) for _ in range(N+1)]
 us = [np.zeros(2) for _ in range(N+1)]
 
-solver = scipy.integrate.ode(dyn.f).set_integrator(name="dopri5")
-
-x0 = np.array([5, 2, 0, 0, 0, 0, 0, 0])
-xs[0] = x0
+xs[0] = solver.y
 
 for k in range(N):
     us[k] = u_eq - K @ (xs[k] - x_eq)
-    solver.set_initial_value(xs[k]).set_f_params(us[k])
-    solver.integrate(h)
+    solver.set_f_params(us[k])
+    solver.integrate(solver.t+h)
     xs[k+1] = solver.y
 
 us[N] = us[N-1]
-
-print(xs)
 
 # Visualization
 tspan = [h * k for k in range(N+1)]
