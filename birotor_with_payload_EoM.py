@@ -38,6 +38,19 @@ W_2 = wrenchMatrix(r_2, q)
 
 B = (W_1 * f).row_join(W_2 * f)
 
+# Input forces
+k1, k2 = symbols("kappa_1 kappa_2")
+
+d = Matrix([-1, 0])
+
+r_3 = Matrix([y, z]) 
+r_4 = Matrix([y + l * sin(theta), z - l * cos(theta)]) 
+
+W_3 = wrenchMatrix(r_3, q)
+W_4 = wrenchMatrix(r_4, q)
+
+E = k1 * W_3 * d + k2 * W_4 * d
+
 # Quantities
 M = massMatrix(T, q, t)
 c = velocityTerms(T, q, t) + diff(diff(T, diff(q, t).T), l).T * diff(l, t)
@@ -50,3 +63,4 @@ print("M &=", latex(simplify(M)), "\\\\")
 print("c &=", latex(simplify(c)), "\\\\")
 print("\\tau_p &=", latex(simplify(tau_p)), "\\\\")
 print("B &=", latex(simplify(B)))
+print("E &=", latex(simplify(E)))
