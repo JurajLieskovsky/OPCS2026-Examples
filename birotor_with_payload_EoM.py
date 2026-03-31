@@ -7,15 +7,16 @@ y = Function("y")(t)
 z = Function("z")(t)
 theta = Function("theta")(t)
 phi = Function("phi")(t)
+l = Function("l")(t)
 
-g, mass_Q, moi_Q, mass_P, l, a = symbols("g m_Q I_Q m_P l a")
+g, mass_Q, moi_Q, mass_P, a = symbols("g m_Q I_Q m_P a")
 
 # Generalized coordinates
 q = Matrix([y, z, theta, phi])
 
 # Kinetic energy
-vyP = diff(y, t) + l * diff(phi, t) * cos(phi)
-vzP = diff(z, t) + l * diff(phi, t) * sin(phi)
+vyP = diff(y, t) + l * diff(phi, t) * cos(phi) + diff(l,t) * sin(phi)
+vzP = diff(z, t) + l * diff(phi, t) * sin(phi) - diff(l,t) * cos(phi)
 
 T = 0.5 * (
     mass_Q * (diff(y, t) ** 2 + diff(z, t) ** 2)
@@ -39,7 +40,7 @@ B = (W_1 * f).row_join(W_2 * f)
 
 # Quantities
 M = massMatrix(T, q, t)
-c = velocityTerms(T, q, t)
+c = velocityTerms(T, q, t) + diff(diff(T, diff(q, t).T), l).T * diff(l, t)
 tau_p = potentialTerms(V, q)
 
 # Printout
