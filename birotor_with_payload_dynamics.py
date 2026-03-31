@@ -14,6 +14,7 @@ l = 0.5  # m
 C_Q = 5
 C_P = 1
 
+
 ## Dynamics
 def f(t, x, u, d=np.zeros(1)):
     (y, z, theta, phi, dy, dz, dtheta, dphi) = x

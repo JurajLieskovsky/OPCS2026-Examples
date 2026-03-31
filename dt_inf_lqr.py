@@ -37,28 +37,28 @@ solver = scipy.integrate.ode(dyn.f)
 solver.set_integrator(name="dopri5")
 solver.set_initial_value(x0)
 
-xs = [np.zeros(8) for _ in range(N+1)]
-us = [np.zeros(2) for _ in range(N+1)]
+xs = [np.zeros(8) for _ in range(N + 1)]
+us = [np.zeros(2) for _ in range(N + 1)]
 
 xs[0] = solver.y
 
 for k in range(N):
     us[k] = u_eq - K @ (xs[k] - x_eq)
     solver.set_f_params(us[k], np.random.normal(0.0, 1e0, (1,)))
-    solver.integrate(solver.t+h)
-    xs[k+1] = solver.y
+    solver.integrate(solver.t + h)
+    xs[k + 1] = solver.y
 
-us[N] = us[N-1]
+us[N] = us[N - 1]
 
 # Visualization
-tspan = [h * k for k in range(N+1)]
+tspan = [h * k for k in range(N + 1)]
 
 fix, ax = plt.subplots(2)
 for i in range(4):
     ax[0].plot(tspan, [x[i] for x in xs], label=f"x{i}")
 
 for i in range(2):
-    ax[1].step(tspan, [u[i] for u in us], where='post', label=f"u{i}")
+    ax[1].step(tspan, [u[i] for u in us], where="post", label=f"u{i}")
 
 ax[0].legend()
 ax[1].legend()
