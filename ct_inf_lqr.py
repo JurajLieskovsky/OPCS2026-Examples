@@ -26,10 +26,15 @@ print(K)
 # Simulation
 T = 8
 
+tspan = np.linspace(0, T, 100)
+dspan = [np.random.normal(0.0, 1e0) for _ in tspan]
+
 x0 = np.array([5, 2, 0, 0, 0, 0, 0, 0])
 
 sol = scipy.integrate.solve_ivp(
-    lambda t, x: dyn.f(t, x, u_eq - K @ (x - x_eq)),
+    lambda t, x: dyn.f(
+        t, x, u_eq - K @ (x - x_eq), np.array([np.interp(t, tspan, dspan)])
+    ),
     [0.0, T],
     x0,
     dense_output=True,
@@ -37,7 +42,6 @@ sol = scipy.integrate.solve_ivp(
 
 
 # Visualization
-tspan = np.linspace(0, T, 100)
 
 xs = [sol.sol(t) for t in tspan]
 us = [u_eq - K @ (x - x_eq) for x in xs]

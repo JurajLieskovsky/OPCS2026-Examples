@@ -30,7 +30,7 @@ K = np.linalg.solve(R + B.T @ Q_N @ B, B.T @ Q_N @ A)
 print(K)
 
 ## fin horizon LQR design
-N = 500
+N = 1000
 
 K = [np.zeros((2, 8)) for _ in range(N)]
 
@@ -54,7 +54,7 @@ xs[0] = solver.y
 
 for k in range(N):
     us[k] = u_eq - K[k] @ (xs[k] - x_eq)
-    solver.set_f_params(us[k])
+    solver.set_f_params(us[k], np.random.normal(0.0, 1e0, (1,)))
     solver.integrate(solver.t + h)
     xs[k + 1] = solver.y
 
