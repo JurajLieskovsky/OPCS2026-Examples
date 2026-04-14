@@ -29,6 +29,10 @@ def ref_state(k, rho):
         ]
     )
 
+"""Euler method with zero-order hold"""
+def dt_f(k, x, u, h):
+    return x + h * dyn.f(k * h, x, u)
+
 ## Equilibrium state
 x_eq = ref_state(0, rho)
 u_eq = dyn.g * (dyn.mass_P + dyn.mass_Q) / 2 * np.ones(2)
@@ -54,7 +58,7 @@ K = [np.zeros((2, 8)) for _ in range(N)]
 p = np.zeros(8)
 P = Q_N
 for k in reversed(range(N)):
-    c = ref_state(k, rho) - ref_state(k+1, rho)
+    c = dt_f(k, ref_state(k, rho), u_eq, h) - ref_state(k+1, rho)
 
     M = R + B.T @ P @ B
     invM = np.linalg.inv(M)
@@ -90,19 +94,27 @@ us[N] = us[N - 1]
 # Visualization
 tspan = [h * k for k in range(N + 1)]
 
-fix, ax = plt.subplots(3)
+## States
+fig1, ax1 = plt.subplots(2)
 for i in range(4):
-    ax[0].plot(tspan, [x[i] for x in xs], label=f"x{i}")
-    ax[0].plot(tspan, [ref_state(k, rho) for k in range(N+1)], label=f"x{i}_ref")
+    ax1[0].plot(tspan, [x[i] for x in xs], label=f"x{i}")
+    ax1[0].plot(tspan, [ref_state(k, rho) for k in range(N+1)], label=f"x{i}_ref")
 
 for i in range(2):
-    ax[1].step(tspan, [u[i] for u in us], where="post", label=f"u{i}")
+    ax1[1].step(tspan, [u[i] for u in us], where="post", label=f"u{i}")
 
-ax[2].plot([x[0] for x in xs], [x[1] for x in xs], label="x")
-ax[2].plot([ref_state(k, rho)[0] for k in range(N+1)], [ref_state(k, rho)[1] for k in range(N+1)], label="x_ref")
+ax1[0].legend()
+ax1[1].legend()
 
-ax[0].legend()
-ax[1].legend()
+## Trajectory
+fig2, ax2 = plt.subplots()
+
+ax2.plot([x[0] for x in xs], [x[1] for x in xs], label="x")
+ax2.plot([ref_state(k, rho)[0] for k in range(N+1)], [ref_state(k, rho)[1] for k in range(N+1)], label="x_ref")
+ax2.set_aspect('equal', adjustable='box')
+
+ax2.legend()
+## Show
 plt.show(block=False)
 
 #  animation
