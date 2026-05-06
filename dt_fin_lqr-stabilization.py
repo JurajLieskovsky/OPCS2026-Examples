@@ -54,7 +54,8 @@ xs[0] = solver.y
 
 for k in range(N):
     us[k] = u_eq - K[k] @ (xs[k] - x_eq)
-    solver.set_f_params(us[k], np.random.normal(0.0, 1e0, (1,)))
+    us[k] = [0 if uk <= 0 else uk for uk in us[k]]
+    solver.set_f_params(us[k])#, np.random.normal(0.0, 1e-6, (1,)))
     solver.integrate(solver.t + h)
     xs[k + 1] = solver.y
 
